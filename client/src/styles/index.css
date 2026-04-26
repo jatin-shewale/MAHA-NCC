@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  @apply bg-canvas bg-mesh font-body text-slate-800 antialiased;
+  min-height: 100vh;
+}
+
+.dark body {
+  @apply bg-ink text-slate-100;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.glass {
+  @apply border border-white/20 bg-white/70 backdrop-blur-2xl dark:border-white/10 dark:bg-slate-900/60;
+}
+
+.glass-strong {
+  @apply border border-white/25 bg-white/80 shadow-soft backdrop-blur-2xl dark:border-slate-700/70 dark:bg-slate-900/80;
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

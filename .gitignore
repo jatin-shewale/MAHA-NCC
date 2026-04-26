@@ -1,0 +1,14 @@
+node_modules
+dist
+build
+.DS_Store
+.env
+.env.local
+coverage
+server/uploads/*
+!server/uploads/.gitkeep
+client/dist
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.vite

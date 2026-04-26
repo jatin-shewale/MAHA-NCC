@@ -1,0 +1,19 @@
+import axios from "axios";
+
+export const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+});
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("ncc-pro-token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+export const getErrorMessage = (error) =>
+  error?.response?.data?.details?.[0]?.message ||
+  error?.response?.data?.message ||
+  error?.message ||
+  "Something went wrong";
