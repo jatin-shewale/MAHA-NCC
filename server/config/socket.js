@@ -1,10 +1,20 @@
 import { Server } from 'socket.io';
+import { createOriginChecker } from "./origins.js";
 
-export const setupSocket = (server, clientUrl) => {
+export const setupSocket = (server, clientUrls) => {
+  const isAllowedOrigin = createOriginChecker(clientUrls);
   const io = new Server(server, {
     cors: {
-      origin: clientUrl,
+      origin: (origin, callback) => {
+        if (isAllowedOrigin(origin)) {
+          callback(null, true);
+          return;
+        }
+
+        callback(new Error(`Socket origin not allowed: ${origin}`));
+      },
       methods: ['GET', 'POST'],
+      credentials: true
     },
   });
 

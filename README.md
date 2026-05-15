@@ -68,6 +68,13 @@ PORT=5000
 MONGO_URI=your_mongodb_uri
 JWT_SECRET=your_secret_key
 CLIENT_URL=http://localhost:5173
+CLIENT_URLS=http://localhost:5173,https://your-frontend.vercel.app,https://*.vercel.app
+```
+
+Create a `.env` file in the `client` directory:
+```env
+VITE_API_URL=http://localhost:5000/api
+VITE_FILE_BASE_URL=http://localhost:5000
 ```
 
 ### 3. Installation
@@ -93,6 +100,38 @@ cd server && npm run dev
 # Start Frontend
 cd client && npm run dev
 ```
+
+## Deployment
+
+### Backend on Render
+- Use the included `render.yaml` from the repo root, or create a Web Service with:
+- Root directory: `server`
+- Build command: `npm install`
+- Start command: `npm start`
+- Health check path: `/api/health`
+- Required environment variables:
+  - `NODE_ENV=production`
+  - `MONGO_URI`
+  - `JWT_SECRET`
+  - `JWT_EXPIRES_IN=7d`
+  - `CLIENT_URLS=https://your-frontend.vercel.app,https://*.vercel.app`
+  - `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_SECURE`, `EMAIL_USER`, `EMAIL_PASS`, `EMAIL_FROM`
+  - `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` if you move uploads to Cloudinary
+
+### Frontend on Vercel
+- Set the project root to `client`
+- Framework preset: `Vite`
+- Build command: `npm run build`
+- Output directory: `dist`
+- Add environment variables:
+  - `VITE_API_URL=https://your-render-service.onrender.com/api`
+  - `VITE_FILE_BASE_URL=https://your-render-service.onrender.com`
+- `client/vercel.json` is included so React Router routes resolve correctly on refresh
+
+### Important note about uploads
+- The backend currently stores uploaded files in `server/uploads`
+- That storage is not durable on Render by default, so uploaded profile images, certificates, and PDFs can disappear after redeploys or restarts
+- For production, move uploads to Cloudinary or attach persistent storage before relying on file uploads
 
 ---
 

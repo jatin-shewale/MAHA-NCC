@@ -11,6 +11,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { connectDB } from "./config/db.js";
 import { env } from "./config/env.js";
+import { createCorsOptions } from "./config/origins.js";
 import { setupSocket } from "./config/socket.js";
 
 // Routes
@@ -24,12 +25,15 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const server = http.createServer(app);
+const corsOptions = createCorsOptions(env.clientUrls);
 
 // Socket Setup
-const io = setupSocket(server, env.clientUrl);
+const io = setupSocket(server, env.clientUrls);
 app.set('io', io);
 
-app.use(cors({ origin: env.clientUrl, credentials: true }));
+app.set("trust proxy", 1);
+
+app.use(cors(corsOptions));
 app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, limit: 300 }));
 app.use(compression());
