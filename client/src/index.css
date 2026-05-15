@@ -7,7 +7,6 @@
 @layer base {
   body {
     @apply bg-primary-navy text-white selection:bg-accent-gold selection:text-primary-navy;
-    min-height: 100vh;
   }
 }
 
@@ -36,8 +35,4 @@
 
 ::-webkit-scrollbar-thumb {
   @apply bg-white/10 rounded-full hover:bg-white/20 transition-colors;
-}
-
-#root {
-  min-height: 100vh;
 }

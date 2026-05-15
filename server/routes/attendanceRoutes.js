@@ -1,26 +1,11 @@
-import { Router } from "express";
-import { body } from "express-validator";
-import {
-  generateQrAttendance,
-  listAttendance,
-  markAttendance,
-  scanQrAttendance
-} from "../controllers/attendanceController.js";
-import { protect } from "../middlewares/authMiddleware.js";
-import { authorize } from "../middlewares/roleMiddleware.js";
-import { validate } from "../middlewares/validateMiddleware.js";
+import express from 'express';
+import { checkIn, getMyAttendance, getUnitAttendance } from '../controllers/attendanceController.js';
+import { protect, authorize } from '../middleware/auth.js';
 
-const router = Router();
+const router = express.Router();
 
-router.use(protect);
-router.get("/", listAttendance);
-router.post(
-  "/",
-  authorize("Admin"),
-  validate([body("cadet").notEmpty(), body("date").isISO8601(), body("status").isIn(["Present", "Absent", "Late", "Excused"])]),
-  markAttendance
-);
-router.get("/qr", authorize("Cadet"), generateQrAttendance);
-router.post("/scan", authorize("Admin"), validate([body("qrToken").notEmpty(), body("date").isISO8601()]), scanQrAttendance);
+router.post('/check-in', protect, checkIn);
+router.get('/my-attendance', protect, getMyAttendance);
+router.get('/unit-attendance', protect, authorize('ano', 'battalion_admin'), getUnitAttendance);
 
 export default router;

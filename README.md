@@ -1,96 +1,106 @@
-# NCC Cadet Management System Pro
+# CadetVerse AI — Geo Intelligent NCC Management & Cadet Social Network
 
-Production-style MERN stack application for cadet administration, camp workflows, attendance, achievements, study materials, notifications, leaderboard tracking, digital ID support, PDF reporting, and PWA delivery.
+CadetVerse AI (Codename: **NCC Command Nexus**) is a production-grade digital ecosystem designed to modernize the National Cadet Corps (NCC) operations. It combines Enterprise Resource Planning (ERP), geo-fenced attendance tracking, and a social achievement network into a unified "defense-grade" platform.
 
-## Stack
+## 🚀 Key Features
 
-- Frontend: React, Vite, Tailwind CSS, React Router, Axios, Framer Motion, Recharts, React Icons, PWA
-- Backend: Node.js, Express, MongoDB, Mongoose, JWT, bcrypt, Multer, Nodemailer
-- Security: Helmet, rate limiting, Mongo sanitization, validation middleware, RBAC, audit logging
+### 1. Command Dashboard
+- **ANO Command Center**: Real-time analytics on unit strength, attendance trends, and achievement pipelines.
+- **Cadet Operational Dossier**: Personal performance metrics, drill proficiency, and service history.
 
-## Folder Structure
+### 2. Smart Geo-Attendance
+- **GPS-Fenced Check-in**: Parade validation within a specific radius of the parade ground.
+- **Anti-Spoofing**: Validates device integrity and GPS accuracy.
+- **Confidence Scoring**: Advanced algorithms to ensure attendance authenticity.
 
-```text
-.
-|-- client/
-|   |-- public/
-|   |-- src/
-|   |   |-- api/
-|   |   |-- components/
-|   |   |-- context/
-|   |   |-- pages/
-|   |   |-- routes/
-|   |   `-- styles/
-|-- server/
-|   |-- config/
-|   |-- controllers/
-|   |-- middlewares/
-|   |-- models/
-|   |-- routes/
-|   |-- scripts/
-|   |-- services/
-|   |-- uploads/
-|   `-- utils/
-|-- docs/
-|   |-- api.md
-|   `-- deployment.md
-|-- .env.example
-`-- package.json
-```
+### 3. Social Achievement Network
+- **LinkedIn for Cadets**: A professional feed to showcase certificates, camp medals, and firing scores.
+- **ANO Moderation**: All achievements require officer verification before becoming public, ensuring unit discipline.
 
-## Features
+### 4. Digital Identity System
+- **Dynamic NCC ID**: QR-verified digital identity card with service details.
+- **Dossier Management**: Full service book digitizing enrollment, ranks, and measurements.
 
-- JWT authentication with forgot/reset password flow
-- Admin and cadet role separation
-- Admin approval for cadet registrations
-- Admin dashboard with KPI cards, analytics charts, audit logs, and CRUD operations
-- Cadet dashboard with camp applications, achievement uploads, QR attendance pass, leaderboard, recommendations, and PDF reports
-- Study material management, notifications, announcements, and timeline views
-- Mobile-first premium glassmorphism UI with dark/light mode and installable PWA support
+### 5. AI Command Copilot
+- **Neural Assistant**: AI-driven training guidance for B & C certificate syllabus.
+- **Operational Intelligence**: Ask about drill positions, weapon training, or camp eligibility.
 
-## Local Setup
+---
 
-1. Copy `.env.example` to `.env`
-2. Copy `server/.env.example` to `server/.env`
-3. Copy `client/.env.example` to `client/.env`
-4. Install dependencies:
+## 🛠️ Tech Stack
+
+- **Frontend**: React, Vite, Tailwind CSS, Framer Motion, Recharts, Leaflet.
+- **Backend**: Node.js, Express, MongoDB Atlas, Socket.io.
+- **State Management**: Zustand.
+- **Security**: JWT, RBAC (Role-Based Access Control), Helmet, Bcrypt.
+
+---
+
+## 📂 Project Structure
 
 ```bash
-npm install
-npm install --workspace server
-npm install --workspace client
+cadetverse-ai/
+├── client/          # Vite + React Frontend
+│   ├── src/
+│   │   ├── components/  # Atomic components & Backgrounds
+│   │   ├── pages/       # Feature-specific pages
+│   │   └── store/       # Zustand state management
+│
+├── server/          # Node.js + Express Backend
+│   ├── models/      # Mongoose Schemas
+│   ├── controllers/ # Business Logic
+│   ├── routes/      # RESTful Endpoints
+│   └── scripts/     # Seeding & Data Utils
 ```
 
-5. Start MongoDB locally or point `MONGO_URI` to Atlas
-6. Seed starter data:
+---
 
+## 🏁 Getting Started
+
+### 1. Prerequisites
+- MongoDB Atlas account (or local MongoDB).
+- Node.js (v18+).
+
+### 2. Environment Setup
+Create a `.env` file in the `server` directory:
+```env
+PORT=5000
+MONGO_URI=your_mongodb_uri
+JWT_SECRET=your_secret_key
+CLIENT_URL=http://localhost:5173
+```
+
+### 3. Installation
 ```bash
+# Install server dependencies
+cd server && npm install
+
+# Install client dependencies
+cd ../client && npm install
+```
+
+### 4. Seed Data
+```bash
+cd server
 npm run seed
 ```
 
-Default seed accounts:
-- Admin: `admin@nccpro.com` / `Admin@123`
-- Cadet: `cadet@nccpro.com` / `Cadet@123`
-
-7. Run the app:
-
+### 5. Run Development Servers
 ```bash
-npm run dev
+# Start Backend
+cd server && npm run dev
+
+# Start Frontend
+cd client && npm run dev
 ```
 
-Frontend: `http://localhost:5173`
-Backend: `http://localhost:5000`
+---
 
-## API Docs
+## 🛡️ Security Protocol
+- **RBAC**: Strict role enforcement (Cadet vs. ANO).
+- **Data Integrity**: GPS validation and MODERATION_FLOW for all social activity.
+- **Encrypted Comms**: JWT-based session management.
 
-See [docs/api.md](docs/api.md)
+---
 
-## Deployment
-
-See [docs/deployment.md](docs/deployment.md)
-
-## Notes
-
-- Public registration is cadet-first. The very first admin can bootstrap the platform before any admin exists.
-- File uploads are stored locally in `server/uploads` by default.
-- For production, use managed SMTP and MongoDB Atlas, and serve uploads from persistent object storage if needed.
+**Jai Hind!** Developed for the National Cadet Corps Digital Mission.

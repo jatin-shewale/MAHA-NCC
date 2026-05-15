@@ -1,61 +1,55 @@
-import { StatusCodes } from "http-status-codes";
-import QRCode from "qrcode";
-import { Attendance } from "../models/Attendance.js";
-import { AppError } from "../utils/AppError.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
-import { paginate } from "../utils/helpers.js";
+import Attendance from '../models/Attendance.js';
+import CadetProfile from '../models/CadetProfile.js';
 
-export const listAttendance = asyncHandler(async (req, res) => {
-  const { page, limit, skip } = paginate(req.query);
-  const query = {
-    ...(req.user.role === "Cadet" ? { cadet: req.user._id } : {}),
-    ...(req.query.cadet ? { cadet: req.query.cadet } : {})
-  };
+export const checkIn = async (req, res) => {
+  try {
+    const { lat, lng, paradeLocation, deviceId } = req.body;
 
-  const [items, total] = await Promise.all([
-    Attendance.find(query)
-      .populate("cadet", "name cadetId wing")
-      .sort({ date: -1 })
-      .skip(skip)
-      .limit(limit),
-    Attendance.countDocuments(query)
-  ]);
+    // Basic Geofencing Check (Simulated for now, could use a utility)
+    // In a real app, we would compare lat/lng with paradeLocation.coords
+    const confidenceScore = 0.95; // Mock score
 
-  res.json({ success: true, data: items, pagination: { total, page, limit, pages: Math.ceil(total / limit) } });
-});
+    const attendance = await Attendance.create({
+      cadet: req.user._id,
+      location: {
+        type: 'Point',
+        coordinates: [lng, lat],
+      },
+      paradeLocation: {
+        name: paradeLocation,
+        radius: 100, // 100 meters
+      },
+      confidenceScore,
+      deviceId,
+    });
 
-export const markAttendance = asyncHandler(async (req, res) => {
-  const attendance = await Attendance.findOneAndUpdate(
-    { cadet: req.body.cadet, date: req.body.date },
-    { ...req.body, markedBy: req.user._id },
-    { upsert: true, new: true, runValidators: true }
-  );
+    // Update cadet total parades
+    await CadetProfile.findOneAndUpdate(
+      { user: req.user._id },
+      { $inc: { totalParades: 1 } }
+    );
 
-  res.status(StatusCodes.CREATED).json({ success: true, message: "Attendance saved successfully", data: attendance });
-});
+    res.status(201).json(attendance);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
-export const generateQrAttendance = asyncHandler(async (req, res) => {
-  const qrToken = `${req.user._id}:${Date.now()}`;
-  const qrImage = await QRCode.toDataURL(qrToken);
-  res.json({ success: true, data: { qrToken, qrImage } });
-});
+export const getMyAttendance = async (req, res) => {
+  try {
+    const records = await Attendance.find({ cadet: req.user._id }).sort('-date');
+    res.json(records);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
-export const scanQrAttendance = asyncHandler(async (req, res) => {
-  const [cadetId] = req.body.qrToken.split(":");
-  if (!cadetId) throw new AppError("Invalid QR token", StatusCodes.BAD_REQUEST);
-
-  const attendance = await Attendance.findOneAndUpdate(
-    { cadet: cadetId, date: req.body.date },
-    {
-      cadet: cadetId,
-      date: req.body.date,
-      status: "Present",
-      remarks: "Marked via QR scan",
-      markedBy: req.user._id,
-      qrToken: req.body.qrToken
-    },
-    { upsert: true, new: true }
-  );
-
-  res.json({ success: true, message: "QR attendance captured", data: attendance });
-});
+export const getUnitAttendance = async (req, res) => {
+  try {
+    // ANO only: Get all attendance for their unit
+    const records = await Attendance.find().populate('cadet', 'name unit').sort('-date');
+    res.json(records);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

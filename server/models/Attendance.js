@@ -1,32 +1,39 @@
-import mongoose from "mongoose";
-import { ATTENDANCE_STATUS } from "../utils/constants.js";
+import mongoose from 'mongoose';
 
-const attendanceSchema = new mongoose.Schema(
-  {
-    cadet: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true
-    },
-    date: {
-      type: Date,
-      required: true
-    },
-    status: {
-      type: String,
-      enum: Object.values(ATTENDANCE_STATUS),
-      required: true
-    },
-    remarks: String,
-    markedBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User"
-    },
-    qrToken: String
+const attendanceSchema = new mongoose.Schema({
+  cadet: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
   },
-  { timestamps: true }
-);
+  date: {
+    type: Date,
+    default: Date.now,
+  },
+  location: {
+    type: {
+      type: String,
+      enum: ['Point'],
+      default: 'Point',
+    },
+    coordinates: {
+      type: [Number], // [longitude, latitude]
+      required: true,
+    }
+  },
+  paradeLocation: {
+    name: String,
+    radius: Number, // in meters
+  },
+  status: {
+    type: String,
+    enum: ['present', 'absent', 'late'],
+    default: 'present',
+  },
+  confidenceScore: Number, // based on geo-validation
+  deviceId: String,
+}, { timestamps: true });
 
-attendanceSchema.index({ cadet: 1, date: -1 }, { unique: true });
+attendanceSchema.index({ location: '2dsphere' });
 
-export const Attendance = mongoose.model("Attendance", attendanceSchema);
+export default mongoose.model('Attendance', attendanceSchema);

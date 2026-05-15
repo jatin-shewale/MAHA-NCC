@@ -1,45 +1,29 @@
-import mongoose from "mongoose";
-import { NOTIFICATION_TYPE } from "../utils/constants.js";
+import mongoose from 'mongoose';
 
-const notificationSchema = new mongoose.Schema(
-  {
-    title: {
-      type: String,
-      required: true
-    },
-    message: {
-      type: String,
-      required: true
-    },
-    type: {
-      type: String,
-      enum: Object.values(NOTIFICATION_TYPE),
-      default: NOTIFICATION_TYPE.SYSTEM
-    },
-    recipients: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
-      }
-    ],
-    isBroadcast: {
-      type: Boolean,
-      default: false
-    },
-    readBy: [
-      {
-        user: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User"
-        },
-        readAt: Date
-      }
-    ],
-    metadata: mongoose.Schema.Types.Mixed
+const notificationSchema = new mongoose.Schema({
+  recipient: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
   },
-  { timestamps: true }
-);
+  sender: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  },
+  type: {
+    type: String,
+    enum: ['post_approval', 'post_rejection', 'camp_alert', 'attendance_warning', 'system'],
+    required: true,
+  },
+  message: {
+    type: String,
+    required: true,
+  },
+  read: {
+    type: Boolean,
+    default: false,
+  },
+  link: String,
+}, { timestamps: true });
 
-notificationSchema.index({ recipients: 1, createdAt: -1 });
-
-export const Notification = mongoose.model("Notification", notificationSchema);
+export default mongoose.model('Notification', notificationSchema);
